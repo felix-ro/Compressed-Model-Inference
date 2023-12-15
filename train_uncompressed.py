@@ -1,6 +1,7 @@
 import tensorflow as tf
 
 from speech_dataset import SpeechDataset
+from utils import getDataset
 
 
 def create_model(input_layer, num_classes):
@@ -45,14 +46,7 @@ def residual(x, filters, kernel_size=3, strides=1, activation="relu"):
 
 def main():
     print("Using TensorFlow version", tf.__version__)
-
-    dataset = SpeechDataset(words=['down', 'go', 'left', 'no', 'off', 'on', 'right', 'stop', 'up', 'yes'],
-                            upper_band_limit=5000.0,  # ~ human voice range
-                            lower_band_limit=125.0,
-                            feature_bin_count=25,
-                            window_size_ms=40.0,
-                            window_stride=20.0,
-                            silence_percentage=3, unknown_percentage=3)
+    dataset = getDataset()
     batch_size = 128
     train_data = dataset.training_dataset().batch(batch_size).prefetch(1) 
     valid_data = dataset.validation_dataset().batch(batch_size).prefetch(1)
@@ -86,6 +80,7 @@ def main():
 
     test_data = dataset.testing_dataset().batch(64)
     model.evaluate(test_data)
+
 
 if __name__ == "__main__":
     main()

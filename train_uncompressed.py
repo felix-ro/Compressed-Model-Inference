@@ -53,26 +53,37 @@ def main():
                             window_stride=20.0,
                             silence_percentage=3, unknown_percentage=3)
     batch_size = 128
-    train_data = dataset.training_dataset().batch(batch_size).prefetch(1) # .prefetch(1) preloads a batch onto a GPU
+    train_data = dataset.training_dataset().batch(batch_size).prefetch(1) 
     valid_data = dataset.validation_dataset().batch(batch_size).prefetch(1)
 
-    input_shape = dataset.sample_shape()
-    num_classes = dataset.label_count()
-    input_layer = tf.keras.layers.Input(shape=input_shape)
+    try: 
+        model = tf.keras.models.load_model("model-uncompressedRes.h5")
+    except Exception as e:
+        input_shape = dataset.sample_shape()
+        num_classes = dataset.label_count()
+        input_layer = tf.keras.layers.Input(shape=input_shape)
+        model = create_model(input_layer=input_layer, num_classes=num_classes)
 
-    model = create_model(input_layer=input_layer, num_classes=num_classes)
+        model.summary()
+        model.compile(
+                optimizer=tf.keras.optimizers.legacy.Adam(learning_rate=0.003),
+                loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False),
+                metrics=['accuracy'])
 
-    model.summary()
-    model.compile(optimizer=tf.keras.optimizers.legacy.Adam(learning_rate=0.003),
-                  loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False),
-                  metrics=['accuracy'])
-
-    early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
-    model.fit(train_data, validation_data=valid_data, epochs=28, callbacks=[early_stopping])
+        early_stopping = tf.keras.callbacks.EarlyStopping(
+                monitor='val_loss', 
+                patience=10, 
+                restore_best_weights=True)
+        
+        model.fit(
+                train_data, 
+                validation_data=valid_data, 
+                epochs=28, 
+                callbacks=[early_stopping])
+        
+        model.save("model-uncompressedRes.h5")
 
     test_data = dataset.testing_dataset().batch(64)
-    model.save("model-uncompressedRes.h5")
-    #model = tf.keras.models.load_model("model-uncompressedRes.h5");
     model.evaluate(test_data)
 
 if __name__ == "__main__":

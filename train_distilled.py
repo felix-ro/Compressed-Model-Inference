@@ -103,28 +103,30 @@ class Distiller(keras.Model):
         return results
 
 
-#Create the student
-student = keras.Sequential(
-    [
-        keras.Input(shape=(49, 25, 1)),
-        keras.layers.Conv2D(32, (3, 3), strides=(1, 1), padding="same"),
-        keras.layers.BatchNormalization(),
-        keras.layers.LeakyReLU(alpha=0.2),
-        keras.layers.MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding="same"),
+def getStudent():
+    student = keras.Sequential(
+        [
+            keras.Input(shape=(49, 25, 1)),
+            keras.layers.Conv2D(32, (3, 3), strides=(1, 1), padding="same"),
+            keras.layers.BatchNormalization(),
+            keras.layers.LeakyReLU(alpha=0.2),
+            keras.layers.MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding="same"),
 
-        keras.layers.Conv2D(64, (3, 3), strides=(1, 1), padding="same"),
-        keras.layers.BatchNormalization(),
-        keras.layers.MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding="same"),
+            keras.layers.Conv2D(64, (3, 3), strides=(1, 1), padding="same"),
+            keras.layers.BatchNormalization(),
+            keras.layers.MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding="same"),
 
-        keras.layers.Conv2D(64, (3, 3), strides=(1, 1), padding="same"),
-        keras.layers.BatchNormalization(),
-        keras.layers.MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding="same"),
+            keras.layers.Conv2D(64, (3, 3), strides=(1, 1), padding="same"),
+            keras.layers.BatchNormalization(),
+            keras.layers.MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding="same"),
 
-        keras.layers.Flatten(),
-        keras.layers.Dense(12, activation='softmax'),
-    ],
-    name="student",
-)
+            keras.layers.Flatten(),
+            keras.layers.Dense(12, activation='softmax'),
+        ],
+        name="student",
+    )
+
+    return student
 
 
 def main(): 
@@ -137,31 +139,41 @@ def main():
                             silence_percentage=3, unknown_percentage=3)
     batch_size = 128
     train_data = dataset.training_dataset().batch(batch_size).prefetch(1) 
-    valid_data = dataset.validation_dataset().batch(batch_size).prefetch(1)
 
     try: 
-        model = tf.keras.models.load_model("model-uncompressedRes.h5")
-    except Exception as e: 
-        print("Uncompressed model not found. Training uncompressed model first!")
-        train_uncompressed.main()
+        student = getStudent()
+        student.load_weights("student_model.h5")
+    except Exception as e:
+        print("No pretrained weights for student found. Distilling model...")
+        try: 
+            model = tf.keras.models.load_model("model-uncompressedRes.h5")
+        except Exception as e: 
+            print("Uncompressed model not found. Training uncompressed model first!")
+            train_uncompressed.main()
 
-    # Initialize and compile distiller
-    distiller = Distiller(student=student, teacher=model)
-    distiller.compile(
-        optimizer=keras.optimizers.Adam(),
-        metrics=["accuracy"],
-        student_loss_fn=keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-        distillation_loss_fn=keras.losses.KLDivergence(),
-        alpha=0.1,
-        temperature=10,
-    )
+        # Initialize and compile distiller
+        student = getStudent()
+        distiller = Distiller(student=student, teacher=model)
+        distiller.compile(
+            optimizer=keras.optimizers.Adam(),
+            metrics=["accuracy"],
+            student_loss_fn=keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+            distillation_loss_fn=keras.losses.KLDivergence(),
+            alpha=0.1,
+            temperature=10,
+        )
 
-    # Distill teacher to student
-    student.summary()
-    distiller.fit(train_data, epochs=35)
+        # Distill teacher to student
+        student.summary()
+        distiller.fit(train_data, epochs=35)
+        student = distiller.student 
+        
+    student.compile(metrics=["accuracy"])
+    student.save_weights("student_model.h5")
 
     test_data = dataset.testing_dataset().batch(64)
-    distiller.evaluate(test_data)
+    student.evaluate(test_data)
+
 
 
 if __name__ == "__main__":

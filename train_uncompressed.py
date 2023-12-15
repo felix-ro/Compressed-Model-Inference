@@ -1,4 +1,5 @@
 import tensorflow as tf
+
 from speech_dataset import SpeechDataset
 
 
@@ -45,7 +46,7 @@ def residual(x, filters, kernel_size=3, strides=1, activation="relu"):
 def main():
     print("Using TensorFlow version", tf.__version__)
 
-    dataset = SpeechDataset(words=["yes", "no"],
+    dataset = SpeechDataset(words=['down', 'go', 'left', 'no', 'off', 'on', 'right', 'stop', 'up', 'yes'],
                             upper_band_limit=5000.0,  # ~ human voice range
                             lower_band_limit=125.0,
                             feature_bin_count=25,

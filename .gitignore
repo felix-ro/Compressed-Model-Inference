@@ -1,3 +1,4 @@
 speech_commands_v0.02.tar.gz
 *.gz
 speech_dataset/
+__pycache__

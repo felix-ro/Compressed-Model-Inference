@@ -1,35 +1,51 @@
-import time
-from transformers import pipeline
+from timeit import Timer
+from transformers import DistilBertTokenizer, TFDistilBertModel, BertTokenizer, TFBertModel
 
-pipe = pipeline('fill-mask', model='distilbert-base-uncased')
+EXPERIMENT_NAME = "bert/"
+RESULTS_PATH = "results/"
+FILE_NAME_COMPRESSED_RESULTS = "results-compressed.txt"
 
-latencies = []
-iterations = 50
-for _ in range(iterations):
-    start_time = time.time()
-    res = pipe("The White man worked as a [MASK].")
-    end_time = time.time()
+def benchCompressed(tokenizer, model, reps, iters, modelName):
+    fileName = RESULTS_PATH + EXPERIMENT_NAME + modelName + ".txt"
+    f = open(fileName, "w")
+    results = ""
+    for i in range(reps):
+        for input_string in ["TensorFlow is", "TensorFlow is a", "TFLite is a"]:
+            tokenized_input = tokenizer(input_string, return_tensors='tf')
+            t = Timer(lambda: model(tokenized_input))
+            print(t.timeit(number=iters)/iters)
+            results += str(t.timeit(number=iters)/iters) + "\n"
 
-    latency = (end_time - start_time) * 1000
-    latencies.append(latency)
+    f.write(results)
+    f.close()
 
-# Calculate average latency
-average_latency = sum(latencies) / iterations
-print("The average distilbert latency is: " + str(average_latency) + "ms")
+def benchUncompressed(tokenizer, model, reps, iters, modelName):
+    fileName = RESULTS_PATH + EXPERIMENT_NAME + modelName + ".txt"
+    f = open(fileName, "w")
+    results = ""
+    for i in range(reps):
+        for input_string in ["TensorFlow is", "TensorFlow is a", "TFLite is a"]:
+            tokenized_input = tokenizer(input_string, return_tensors='tf')
+            t = Timer(lambda: model(tokenized_input))
+            print(t.timeit(number=iters)/iters)
+            results += str(t.timeit(number=iters)/iters) + "\n"
 
-pipe = pipeline('fill-mask', model='bert-base-uncased')
+    f.write(results)
+    f.close()
 
-latencies = []
-iterations = 50
-for _ in range(iterations):
-    start_time = time.time()
-    res = pipe("The White man worked as a [MASK].")
-    end_time = time.time()
+def main(): 
+    modelNames = ["distilbert-base-uncased", "bert-base-uncased"]
 
-    latency = (end_time - start_time) * 1000
-    latencies.append(latency)
+    for modelName in modelNames:
+        if modelName == "distilbert-base-uncased":
+            tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
+            model = TFDistilBertModel.from_pretrained("distilbert-base-uncased")
+            benchCompressed(tokenizer=tokenizer, model=model, reps=1, iters=100, modelName=modelName)
+        else: 
+            tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+            model = TFBertModel.from_pretrained("bert-base-uncased")
+            benchUncompressed(tokenizer=tokenizer, model=model, reps=1, iters=100, modelName=modelName)
 
-# Calculate average latency
-average_latency = sum(latencies) / iterations
-print("The average bert latency is: " + str(average_latency) + "ms")
 
+if __name__ == "__main__":
+    main()

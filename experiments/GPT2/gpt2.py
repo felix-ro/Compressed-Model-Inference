@@ -1,92 +1,53 @@
-import time
+from timeit import Timer
 import tensorflow as tf
 from transformers import AutoTokenizer, TFAutoModelForCausalLM
 
-FILE_NAME_UNCOMPRESSED_RESULTS = "results-uncompressed.txt"
-FILE_NAME_UNCOMPRESSED_COMPILED_RESULTS = "results-uncompressed-compiled.txt"
-FILE_NAME_COMPRESSED_RESULTS = "results-compressed.txt"
-FILE_NAME_COMPRESSED_COMPILED_RESULTS = "results-compressed-compiled.txt"
+EXPERIMENT_NAME = "gpt2/"
+RESULTS_PATH = "results/"
 
 def fileInit(fileName):
     f = open(fileName, "w")
     f.write("")
     f.close()
 
-def benchUncompressed(tokenizer, model):
-    f = open(FILE_NAME_UNCOMPRESSED_RESULTS, "a")
-    for input_string in ["TensorFlow is", "TensorFlow is a", "TFLite is a"]:
-        tokenized_input = tokenizer(input_string, return_tensors="tf")
+def benchUncompiled(tokenizer, model, reps, iters, modelName):
+    fileName = RESULTS_PATH + EXPERIMENT_NAME + modelName + "-uncompiled" + ".txt"
+    f = open(fileName, "w")
 
-        start = time.time_ns()
-        generated_tokens = model.generate(**tokenized_input, num_beams=2)
-        end = time.time_ns()
-        f.write(f"Execution time -- {(end - start) / 1e6:.1f} ms\n")
-        print(f"Execution time -- {(end - start) / 1e6:.1f} ms\n")
-        decoded_text = tokenizer.decode(generated_tokens[0], skip_special_tokens=True)
-        print(f"Generated -- {decoded_text}")
+    results = ""
+    for i in range(reps):
+        for input_string in ["TensorFlow is", "TensorFlow is a", "TFLite is a"]:
+            tokenized_input = tokenizer(input_string, return_tensors="tf")
+            t = Timer(lambda: model.generate(**tokenized_input, num_beams=2))
+            print(t.timeit(number=iters)/iters)
+            results += str(t.timeit(number=iters)/iters) + "\n"
+
+    f.write(results)
     f.close()
 
-def benchUncompressedCompiled(tokenizer, model):
-    f = open(FILE_NAME_UNCOMPRESSED_COMPILED_RESULTS, "a")
+def benchCompiled(tokenizer, model, reps, iters, modelName):
+    fileName = RESULTS_PATH + EXPERIMENT_NAME + modelName + "-compiled" + ".txt"
+    f = open(fileName, "w")
     xla_generate = tf.function(model.generate, jit_compile=True)
-    for input_string in ["TensorFlow is", "TensorFlow is a", "TFLite is a", "TensorFlow is"]:
-        tokenized_input = tokenizer(input_string, return_tensors="tf")
+    results = ""
+    for i in range(reps):
+        for input_string in ["TensorFlow is", "TensorFlow is a", "TFLite is a"]:
+            tokenized_input = tokenizer(input_string, return_tensors="tf")
+            t = Timer(lambda: xla_generate(**tokenized_input, num_beams=2))
+            print(t.timeit(number=iters)/iters)
+            results += str(t.timeit(number=iters)/iters) + "\n"
 
-        tokenized_input = tokenizer(input_string, pad_to_multiple_of=8, padding=True, return_tensors="tf")
-        start = time.time_ns()
-        generated_tokens = xla_generate(**tokenized_input, num_beams=2)
-        end = time.time_ns()
-        print(f"Execution time -- {(end - start) / 1e6:.1f} ms\n")
-        f.write(f"Execution time -- {(end - start) / 1e6:.1f} ms\n")
-        decoded_text = tokenizer.decode(generated_tokens[0], skip_special_tokens=True)
-        print(f"Generated -- {decoded_text}")
-    f.close()
-
-def benchCompressed(tokenizer, model):
-    f = open(FILE_NAME_COMPRESSED_RESULTS, "a")
-    for input_string in ["TensorFlow is", "TensorFlow is a", "TFLite is a"]:
-        tokenized_input = tokenizer(input_string, return_tensors="tf")
-
-        start = time.time_ns()
-        generated_tokens = model.generate(**tokenized_input, num_beams=2)
-        end = time.time_ns()
-        f.write(f"Execution time -- {(end - start) / 1e6:.1f} ms\n")
-        print(f"Execution time -- {(end - start) / 1e6:.1f} ms\n")
-        decoded_text = tokenizer.decode(generated_tokens[0], skip_special_tokens=True)
-        print(f"Generated -- {decoded_text}")
-    f.close()
-
-def benchCompressedCompiled(tokenizer, model):
-    f = open(FILE_NAME_COMPRESSED_COMPILED_RESULTS, "a")
-    xla_generate = tf.function(model.generate, jit_compile=True)
-    for input_string in ["TensorFlow is", "TensorFlow is a", "TFLite is a", "TensorFlow is"]:
-        tokenized_input = tokenizer(input_string, return_tensors="tf")
-
-        tokenized_input = tokenizer(input_string, pad_to_multiple_of=8, padding=True, return_tensors="tf")
-        start = time.time_ns()
-        generated_tokens = xla_generate(**tokenized_input, num_beams=2)
-        end = time.time_ns()
-        print(f"Execution time -- {(end - start) / 1e6:.1f} ms\n")
-        f.write(f"Execution time -- {(end - start) / 1e6:.1f} ms\n")
-        decoded_text = tokenizer.decode(generated_tokens[0], skip_special_tokens=True)
-        print(f"Generated -- {decoded_text}")
+    f.write(results)
     f.close()
 
 def main():
-    fileInit(FILE_NAME_UNCOMPRESSED_RESULTS)
-    fileInit(FILE_NAME_UNCOMPRESSED_COMPILED_RESULTS)
-    fileInit(FILE_NAME_COMPRESSED_RESULTS)
-    fileInit(FILE_NAME_COMPRESSED_COMPILED_RESULTS)
 
-    tokenizer = AutoTokenizer.from_pretrained("gpt2", padding_side="left", pad_token="</s>")
-    model = TFAutoModelForCausalLM.from_pretrained("gpt2")
-    tokenizerCompressed = AutoTokenizer.from_pretrained("distilgpt2", padding_side="left", pad_token="</s>")
-    modelCompressed = TFAutoModelForCausalLM.from_pretrained("distilgpt2")
-
-    benchUncompressed(tokenizer=tokenizer, model=model)
-    benchUncompressedCompiled(tokenizer=tokenizer, model=model)
-    benchCompressed(tokenizer=tokenizerCompressed, model=modelCompressed)
-    benchCompressedCompiled(tokenizer=tokenizerCompressed, model=modelCompressed)
+    modelNames = ["gpt2", "distilgpt2"]
+    for modelName in modelNames: 
+        tokenizer = AutoTokenizer.from_pretrained(modelName, padding_side="left", pad_token="</s>")
+        model = TFAutoModelForCausalLM.from_pretrained(modelName)
+        benchUncompiled(tokenizer=tokenizer, model=model, reps=1, iters=10, modelName=modelName)
+        benchCompiled(tokenizer=tokenizer, model=model, reps=1, iters=10, modelName=modelName)
 
 if __name__ == "__main__":
     main()

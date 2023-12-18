@@ -45,7 +45,6 @@ def residual(x, filters, kernel_size=3, strides=1, activation="relu"):
     return x
 
 def main():
-    print("Using TensorFlow version", tf.__version__)
     dataset = getDataset()
     batch_size = 128
     train_data = dataset.training_dataset().batch(batch_size).prefetch(1) 

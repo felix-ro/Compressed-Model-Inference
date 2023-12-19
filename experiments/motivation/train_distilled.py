@@ -137,7 +137,7 @@ def main():
 
     try: 
         student = getStudent()
-        student.load_weights("student_model.h5")
+        student.load_weights("student-model.h5")
     except Exception as e:
         print("No pretrained weights for student found. Distilling model...")
         try: 
@@ -164,7 +164,7 @@ def main():
         student = distiller.student 
         
     student.compile(metrics=["accuracy"])
-    student.save_weights("student_model.h5")
+    student.save_weights("student-model.h5")
 
     test_data = dataset.testing_dataset().batch(64)
     student.evaluate(test_data)

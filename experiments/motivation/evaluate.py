@@ -16,7 +16,7 @@ def main():
     
     try: 
         student = train_distilled.getStudent()
-        student.load_weights("student_model.h5")
+        student.load_weights("student-model.h5")
         student.compile(metrics=["accuracy"])
     except Exception as e:
         print("Could not find distilled model. Run train_distilled.py first.")
@@ -29,8 +29,8 @@ def main():
         return
 
     test_data = dataset.testing_dataset().batch(1)
-    student.evaluate(test_data)
     model.evaluate(test_data)
+    student.evaluate(test_data)
     modelDepthwise.evaluate(test_data)
 
 

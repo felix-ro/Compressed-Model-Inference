@@ -4,3 +4,4 @@ speech_dataset/
 __pycache__
 model/
 *.h5
+.DS_Store

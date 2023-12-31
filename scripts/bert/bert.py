@@ -6,6 +6,7 @@ EXPERIMENT_NAME = "bert/"
 RESULTS_PATH = "results/"
 FILE_NAME_COMPRESSED_RESULTS = "results-compressed.txt"
 
+
 def benchUncompiled(tokenizer, model, reps, iters, modelName):
     fileName = RESULTS_PATH + EXPERIMENT_NAME + modelName + "-uncompiled.txt"
     f = open(fileName, "w")
@@ -19,6 +20,7 @@ def benchUncompiled(tokenizer, model, reps, iters, modelName):
 
     f.write(results)
     f.close()
+
 
 def benchCompiled(tokenizer, model, reps, iters, modelName):
     fileName = RESULTS_PATH + EXPERIMENT_NAME + modelName + "-compiled.txt"
@@ -35,7 +37,8 @@ def benchCompiled(tokenizer, model, reps, iters, modelName):
     f.write(results)
     f.close()
 
-def main(): 
+
+def main():
     modelNames = ["distilbert-base-uncased", "bert-base-uncased"]
 
     for modelName in modelNames:
@@ -44,13 +47,11 @@ def main():
             model = TFDistilBertModel.from_pretrained("distilbert-base-uncased")
             benchUncompiled(tokenizer=tokenizer, model=model, reps=1, iters=1, modelName=modelName)
             benchCompiled(tokenizer=tokenizer, model=model, reps=1, iters=1, modelName=modelName)
-
-        else: 
+        else:
             tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
             model = TFBertModel.from_pretrained("bert-base-uncased")
             benchUncompiled(tokenizer=tokenizer, model=model, reps=1, iters=1, modelName=modelName)
             benchCompiled(tokenizer=tokenizer, model=model, reps=1, iters=1, modelName=modelName)
-
 
 
 if __name__ == "__main__":

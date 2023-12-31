@@ -27,9 +27,12 @@ def main():
         print("Could not find compressed depthwise model. Run train_depthwise.py first.")
         return
 
-    test_data = dataset.testing_dataset().batch(1)
+    test_data = dataset.testing_dataset().batch(4482).prefetch(1)
+    print("Base Model:")
     model.evaluate(test_data)
+    print("Distilled Model:")
     student.evaluate(test_data)
+    print("Depthwise Model:")
     modelDepthwise.evaluate(test_data)
 
 

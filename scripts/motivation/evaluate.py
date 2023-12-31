@@ -2,29 +2,28 @@ import tensorflow as tf
 
 import train_distilled
 from utils import getDataset
-from speech_dataset import SpeechDataset
 
 
 def main():
     dataset = getDataset()
-    
-    try: 
+
+    try:
         model = tf.keras.models.load_model("model-uncompressedRes.h5")
-    except Exception as e: 
+    except Exception:
         print("Could not find uncompressed model. Run train_uncompressed.py first.")
         return
-    
-    try: 
+
+    try:
         student = train_distilled.getStudent()
         student.load_weights("student-model.h5")
         student.compile(metrics=["accuracy"])
-    except Exception as e:
+    except Exception:
         print("Could not find distilled model. Run train_distilled.py first.")
         return
-    
-    try: 
+
+    try:
         modelDepthwise = tf.keras.models.load_model("model-depthwise.h5")
-    except Exception as e: 
+    except Exception:
         print("Could not find compressed depthwise model. Run train_depthwise.py first.")
         return
 

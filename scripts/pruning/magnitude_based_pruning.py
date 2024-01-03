@@ -58,7 +58,7 @@ def main():
 
     print('Baseline test accuracy:', baseline_model_accuracy)
 
-    _, keras_file = tempfile.mkstemp('.h5')
+    keras_file = "scripts/pruning/model.h5"
     tf.keras.models.save_model(model, keras_file, include_optimizer=False)
     print('Saved baseline model to:', keras_file)
 
@@ -110,7 +110,7 @@ def main():
 
     model_for_export = tfmot.sparsity.keras.strip_pruning(model_for_pruning)
 
-    _, pruned_keras_file = tempfile.mkstemp('.h5')
+    pruned_keras_file = "scripts/pruning/pruned-model.h5"
     tf.keras.models.save_model(model_for_export, pruned_keras_file, include_optimizer=False)
     print('Saved pruned Keras model to:', pruned_keras_file)
 

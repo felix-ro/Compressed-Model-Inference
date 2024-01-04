@@ -5,3 +5,7 @@ __pycache__
 model/
 *.h5
 .DS_Store
+*.onnx
+model_baseline/
+model_qat/
+*.engine

@@ -42,7 +42,7 @@ def main():
     print("QAT val accuracy: {:.3f}%".format(qat_model_accuracy*100))
 
     model_save_path = "scripts/quantization/model_qat"
-    model.save(model_save_path)
+    q_model.save(model_save_path)
     convert_saved_model_to_onnx(saved_model_dir=model_save_path,
                                 onnx_model_path=model_save_path + ".onnx")
 

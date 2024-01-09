@@ -2,11 +2,10 @@
 import tempfile
 import tensorflow as tf
 import numpy as np
-import os
-import zipfile
-
-from tensorflow import keras
 import tensorflow_model_optimization as tfmot
+from tensorflow import keras
+
+from scripts.utils import get_gzipped_model_size
 
 
 def get_lenet_model():
@@ -21,15 +20,6 @@ def get_lenet_model():
         tf.keras.layers.Dense(84, activation='relu'),
         tf.keras.layers.Dense(10, activation='softmax')
     ])
-
-
-def get_gzipped_model_size(file):
-    # Returns size of gzipped model, in bytes.
-    _, zipped_file = tempfile.mkstemp('.zip')
-    with zipfile.ZipFile(zipped_file, 'w', compression=zipfile.ZIP_DEFLATED) as f:
-        f.write(file)
-
-    return os.path.getsize(zipped_file)
 
 
 def main():

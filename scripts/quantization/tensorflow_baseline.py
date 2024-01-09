@@ -33,10 +33,10 @@ def xla_compile_model(model, lr=0.001):
 def bench(model, reps, iters, input, xla: bool):
     if xla:
         print("Benchmarking xla verison...")
-        compiled_tag = "-xla.txt"
+        compiled_tag = "-xla.csv"
     else:
         print("Benchmarking baseline...")
-        compiled_tag = "-baseline.txt"
+        compiled_tag = "-baseline.csv"
 
     fileName = RESULTS_PATH + EXPERIMENT_NAME + compiled_tag
     f = open(fileName, "w")
@@ -44,7 +44,7 @@ def bench(model, reps, iters, input, xla: bool):
     print_results = ""
     for i in range(reps):
         t = Timer(lambda: model.predict(input))
-        print_results += str(t.timeit(number=iters)/iters) + "\n"
+        print_results += str(t.timeit(number=iters)/iters) + ",\n"
         result = t.timeit(number=iters)/iters
         results.append(result)
         print(result)

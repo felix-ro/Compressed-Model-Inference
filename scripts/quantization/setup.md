@@ -14,5 +14,8 @@
 ### Run Baseline Test
 `trtexec --onnx=scripts/quantization/model_baseline.onnx --saveEngine=scripts/quantization/model_baseline.engine --verbose &> results/quantization/A100/baseline_output.log`
 
+### Run Baseline Sparsity Test
+`trtexec --onnx=scripts/quantization/model_baseline.onnx --sparsity=force --saveEngine=scripts/quantization/model_baseline.engine --verbose &> results/quantization/A100/baseline_sparsity_output.log`
+
 ### Run INT8 Quantization & Sparsity Test
-`trtexec --onnx=scripts/quantization/model_qat.onnx --int8 --sparsity=force --saveEngine=scripts/quantization/model_qat.engine --verbose &> results/quantization/A100/sparsity_output.log`
+`trtexec --onnx=scripts/quantization/model_qat.onnx --int8 --sparsity=force --saveEngine=scripts/quantization/model_qat.engine --verbose &> results/quantization/A100/quantized_sparsity_output.log`

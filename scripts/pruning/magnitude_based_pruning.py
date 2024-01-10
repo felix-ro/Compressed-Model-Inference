@@ -1,11 +1,19 @@
 # BASED ON https://www.tensorflow.org/model_optimization/guide/pruning/pruning_with_keras
 import tempfile
+import os
+import zipfile
 import tensorflow as tf
 import numpy as np
 import tensorflow_model_optimization as tfmot
 from tensorflow import keras
 
-from scripts.utils import get_gzipped_model_size
+def get_gzipped_model_size(file):
+    # Returns size of gzipped model, in bytes.
+    _, zipped_file = tempfile.mkstemp('.zip')
+    with zipfile.ZipFile(zipped_file, 'w', compression=zipfile.ZIP_DEFLATED) as f:
+        f.write(file)
+
+    return os.path.getsize(zipped_file) / (1024 ** 2)  # 1 MiB = 2^20 bytes
 
 
 def get_lenet_model():

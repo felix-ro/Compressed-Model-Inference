@@ -2,10 +2,11 @@ import tensorflow as tf
 import numpy as np
 from timeit import Timer
 
-from scripts.utils import get_gzipped_model_size
+from utils import get_gzipped_model_size
 
 # #################### CONFIGURE BEFORE RUNNING #####################
-DEVICE_NAME = "P100"
+# DEVICE_NAME = "P100"
+DEVICE_NAME = "A100"
 RESULTS_PATH = f"results/quantization/{DEVICE_NAME}/"
 EXPERIMENT_NAME = "tensorflow"
 REPS = 10

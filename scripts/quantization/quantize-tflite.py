@@ -1,5 +1,8 @@
+# BASED ON https://www.tensorflow.org/lite/performance/post_training_integer_quant
 import tensorflow as tf
 import numpy as np
+
+from utils import get_gzipped_model_size
 
 
 def run_tflite_model(model: tf.keras.Sequential, test_images):
@@ -35,15 +38,35 @@ def evaluate_model(model, test_images, test_labels):
 
 
 def main():
-    model = tf.keras.models.load_model("scripts/pruning/pruned-model.h5")
+    model = tf.keras.models.load_model("scripts/pruning/model.h5")
     converter = tf.lite.TFLiteConverter.from_keras_model(model)
     converter.optimizations = [tf.lite.Optimize.DEFAULT]
     tflite_quant_model = converter.convert()
 
+    pruned_model = tf.keras.models.load_model("scripts/pruning/pruned-model.h5")
+    converter = tf.lite.TFLiteConverter.from_keras_model(pruned_model)
+    converter.optimizations = [tf.lite.Optimize.DEFAULT]
+    tflite_pruned_quant_model = converter.convert()
+
     mnist = tf.keras.datasets.mnist
     _, (test_images, test_labels) = mnist.load_data()
 
+    print("Baseline Model:")
     evaluate_model(tflite_quant_model, test_images, test_labels)
+
+    print("Pruned Model:")
+    evaluate_model(tflite_pruned_quant_model, test_images, test_labels)
+
+    filename_baseline = "scripts/quantization/model.tflite"
+    with open(filename_baseline, 'wb') as f:
+        f.write(tflite_quant_model)
+
+    filename_pruned = "scripts/quantization/quant-model.tflite"
+    with open(filename_pruned, 'wb') as f:
+        f.write(tflite_pruned_quant_model)
+
+    print("Size of gzipped quantized model: %.2f bytes" % (get_gzipped_model_size(filename_baseline)))
+    print("Size of gzipped pruned quantized model: %.2f bytes" % (get_gzipped_model_size(filename_pruned)))
 
 
 if __name__ == "__main__":

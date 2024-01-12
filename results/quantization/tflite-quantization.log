@@ -1,0 +1,40 @@
+WARNING:tensorflow:No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op while saving (showing 2 of 2). These functions will not be directly callable after loading.
+2024-01-12 16:39:39.793591: W tensorflow/compiler/mlir/lite/python/tf_tfl_flatbuffer_helpers.cc:364] Ignored output_format.
+2024-01-12 16:39:39.793624: W tensorflow/compiler/mlir/lite/python/tf_tfl_flatbuffer_helpers.cc:367] Ignored drop_control_dependency.
+2024-01-12 16:39:39.793953: I tensorflow/cc/saved_model/reader.cc:45] Reading SavedModel from: /var/folders/f1/qxtps1rx3cs85pw03xtp8ql00000gn/T/tmpl381sprr
+2024-01-12 16:39:39.794601: I tensorflow/cc/saved_model/reader.cc:89] Reading meta graph with tags { serve }
+2024-01-12 16:39:39.794607: I tensorflow/cc/saved_model/reader.cc:130] Reading SavedModel debug info (if present) from: /var/folders/f1/qxtps1rx3cs85pw03xtp8ql00000gn/T/tmpl381sprr
+2024-01-12 16:39:39.796377: I tensorflow/compiler/mlir/mlir_graph_optimization_pass.cc:353] MLIR V1 optimization pass is not enabled
+2024-01-12 16:39:39.796894: I tensorflow/cc/saved_model/loader.cc:231] Restoring SavedModel bundle.
+2024-01-12 16:39:39.797301: W tensorflow/tsl/platform/profile_utils/cpu_utils.cc:128] Failed to get CPU frequency: 0 Hz
+2024-01-12 16:39:39.808954: I tensorflow/cc/saved_model/loader.cc:215] Running initialization op on SavedModel bundle at path: /var/folders/f1/qxtps1rx3cs85pw03xtp8ql00000gn/T/tmpl381sprr
+2024-01-12 16:39:39.813410: I tensorflow/cc/saved_model/loader.cc:314] SavedModel load for tags { serve }; Status: success: OK. Took 19457 microseconds.
+2024-01-12 16:39:39.822579: I tensorflow/compiler/mlir/tensorflow/utils/dump_mlir_util.cc:269] disabling MLIR crash reproducer, set env var `MLIR_CRASH_REPRODUCER_DIRECTORY` to enable.
+WARNING:tensorflow:No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+WARNING:tensorflow:No training configuration found in the save file, so the model was *not* compiled. Compile it manually.
+WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op while saving (showing 2 of 2). These functions will not be directly callable after loading.
+2024-01-12 16:39:40.282233: W tensorflow/compiler/mlir/lite/python/tf_tfl_flatbuffer_helpers.cc:364] Ignored output_format.
+2024-01-12 16:39:40.282260: W tensorflow/compiler/mlir/lite/python/tf_tfl_flatbuffer_helpers.cc:367] Ignored drop_control_dependency.
+2024-01-12 16:39:40.282348: I tensorflow/cc/saved_model/reader.cc:45] Reading SavedModel from: /var/folders/f1/qxtps1rx3cs85pw03xtp8ql00000gn/T/tmp7k9vddj8
+2024-01-12 16:39:40.282963: I tensorflow/cc/saved_model/reader.cc:89] Reading meta graph with tags { serve }
+2024-01-12 16:39:40.282970: I tensorflow/cc/saved_model/reader.cc:130] Reading SavedModel debug info (if present) from: /var/folders/f1/qxtps1rx3cs85pw03xtp8ql00000gn/T/tmp7k9vddj8
+2024-01-12 16:39:40.285120: I tensorflow/cc/saved_model/loader.cc:231] Restoring SavedModel bundle.
+2024-01-12 16:39:40.297535: I tensorflow/cc/saved_model/loader.cc:215] Running initialization op on SavedModel bundle at path: /var/folders/f1/qxtps1rx3cs85pw03xtp8ql00000gn/T/tmp7k9vddj8
+2024-01-12 16:39:40.301896: I tensorflow/cc/saved_model/loader.cc:314] SavedModel load for tags { serve }; Status: success: OK. Took 19547 microseconds.
+INFO: Initialized TensorFlow Lite runtime.
+INFO: Applying 1 TensorFlow Lite delegate(s) lazily.
+INFO: Created TensorFlow Lite XNNPACK delegate for CPU.
+VERBOSE: Replacing 6 node(s) with delegate (TfLiteXNNPackDelegate) node, yielding 5 partitions for the whole graph.
+INFO: Successfully applied the default TensorFlow Lite delegate indexed at 0.
+ *NOTE*: because a delegate has been applied, the precision of computations should be unchanged, but the exact output tensor values may have changed. If such output values are checked in your code, like in your tests etc., please consider increasing error tolerance for the check.
+INFO: Applying 1 TensorFlow Lite delegate(s) lazily.
+VERBOSE: Replacing 6 node(s) with delegate (TfLiteXNNPackDelegate) node, yielding 5 partitions for the whole graph.
+INFO: Successfully applied the default TensorFlow Lite delegate indexed at 0.
+ *NOTE*: because a delegate has been applied, the precision of computations should be unchanged, but the exact output tensor values may have changed. If such output values are checked in your code, like in your tests etc., please consider increasing error tolerance for the check.
+Baseline Model:
+Model accuracy is 98.8600% (Number of test samples=10000)
+Pruned Model:
+Model accuracy is 98.7800% (Number of test samples=10000)
+Size of gzipped quantized model: 0.04 bytes
+Size of gzipped pruned quantized model: 0.02 bytes

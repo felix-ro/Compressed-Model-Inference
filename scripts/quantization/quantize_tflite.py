@@ -65,8 +65,8 @@ def main():
     with open(filename_pruned, 'wb') as f:
         f.write(tflite_pruned_quant_model)
 
-    print("Size of gzipped quantized model: %.2f bytes" % (get_gzipped_model_size(filename_baseline)))
-    print("Size of gzipped pruned quantized model: %.2f bytes" % (get_gzipped_model_size(filename_pruned)))
+    print("Size of gzipped quantized model: %.2f MiB" % (get_gzipped_model_size(filename_baseline)))
+    print("Size of gzipped pruned quantized model: %.2f MiB" % (get_gzipped_model_size(filename_pruned)))
 
 
 if __name__ == "__main__":

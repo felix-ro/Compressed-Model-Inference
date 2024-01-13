@@ -108,8 +108,8 @@ def main():
     tf.keras.models.save_model(model_for_export, pruned_keras_file, include_optimizer=False)
     print('Saved pruned Keras model to:', pruned_keras_file)
 
-    print("Size of gzipped baseline Keras model: %.2f bytes" % (get_gzipped_model_size(keras_file)))
-    print("Size of gzipped pruned Keras model: %.2f bytes" % (get_gzipped_model_size(pruned_keras_file)))
+    print("Size of gzipped baseline Keras model: %.2f MiB" % (get_gzipped_model_size(keras_file)))
+    print("Size of gzipped pruned Keras model: %.2f MiB" % (get_gzipped_model_size(pruned_keras_file)))
 
     model_for_export.compile(optimizer='adam',
                              loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),

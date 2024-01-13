@@ -36,5 +36,5 @@ Baseline Model:
 Model accuracy is 98.8600% (Number of test samples=10000)
 Pruned Model:
 Model accuracy is 98.7800% (Number of test samples=10000)
-Size of gzipped quantized model: 0.04 bytes
-Size of gzipped pruned quantized model: 0.02 bytes
+Size of gzipped quantized model: 0.04 MiB
+Size of gzipped pruned quantized model: 0.02 MiB

@@ -1,5 +1,6 @@
 from speech_dataset import SpeechDataset
 
+
 def getDataset():
     dataset = SpeechDataset(
                     words=['down', 'go', 'left', 'no', 'off', 'on', 'right', 'stop', 'up', 'yes'],

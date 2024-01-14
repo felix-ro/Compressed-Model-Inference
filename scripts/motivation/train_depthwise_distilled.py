@@ -2,7 +2,6 @@ import tensorflow as tf
 from tensorflow import keras
 
 from utils import getDataset
-from speech_dataset import SpeechDataset
 import train_uncompressed
 
 
@@ -129,19 +128,19 @@ def getStudent():
     return student
 
 
-def main(): 
+def main():
     dataset = getDataset()
     batch_size = 128
-    train_data = dataset.training_dataset().batch(batch_size).prefetch(1) 
+    train_data = dataset.training_dataset().batch(batch_size).prefetch(1)
 
-    try: 
+    try:
         student = getStudent()
         student.load_weights("model-depthwise.h5")
-    except Exception as e:
+    except Exception:
         print("No pretrained weights for student found. Distilling model...")
-        try: 
+        try:
             model = tf.keras.models.load_model("model-depthwise.h5")
-        except Exception as e: 
+        except Exception:
             print("Uncompressed model not found. Training uncompressed model first!")
             train_uncompressed.main()
 
@@ -160,8 +159,8 @@ def main():
         # Distill teacher to student
         student.summary()
         distiller.fit(train_data, epochs=35)
-        student = distiller.student 
-        
+        student = distiller.student
+
     student.compile(metrics=["accuracy"])
     student.save_weights("depthwise-student-model.h5")
 

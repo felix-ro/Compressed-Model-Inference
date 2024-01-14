@@ -93,7 +93,7 @@ class AudioProcessor(object):
 
             try:
                 filepath, _ = urllib.request.urlretrieve(data_url, filepath, _progress)
-            except:
+            except Exception:
                 tf.compat.v1.logging.error(
                     'Failed to download URL: %s to folder: %s', data_url, filepath)
                 tf.compat.v1.logging.error(
@@ -265,10 +265,7 @@ class AudioProcessor(object):
         settings = self.model_settings
         desired_samples = settings['desired_samples']
         sample_rate = settings['sample_rate']
-        frame_length = settings['window_size_samples']
-        frame_step = settings['window_stride_samples']
         num_channels = settings['fingerprint_width']
-        spectrogram_length = settings['spectrogram_length']
         window_size_ms = (settings['window_size_samples'] * 1000) / sample_rate
         window_step_ms = (settings['window_stride_samples'] * 1000) / sample_rate
 
@@ -332,18 +329,18 @@ class AudioProcessor(object):
             background_mul = tf.multiply(background_data, background_volume)
             background_add = tf.add(background_mul, sliced_foreground)
             background_clamp = tf.clip_by_value(background_add, -1.0, 1.0)
-            
-            int16_input = tf.cast(tf.multiply(background_clamp, 32768), tf.int16)	
-            micro_frontend = frontend_op.audio_microfrontend(	
-                int16_input,	
-                sample_rate=sample_rate,	
-                window_size=window_size_ms,	
-                window_step=window_step_ms,	
+
+            int16_input = tf.cast(tf.multiply(background_clamp, 32768), tf.int16)
+            micro_frontend = frontend_op.audio_microfrontend(
+                int16_input,
+                sample_rate=sample_rate,
+                window_size=window_size_ms,
+                window_step=window_step_ms,
                 num_channels=num_channels,
                 upper_band_limit=settings['upper_band_limit'],
-                lower_band_limit=settings['lower_band_limit'],	
-                out_scale=1,	
-                out_type=tf.float32)	
+                lower_band_limit=settings['lower_band_limit'],
+                out_scale=1,
+                out_type=tf.float32)
             x = tf.multiply(micro_frontend, (10.0 / 256.0))
             x = tf.expand_dims(x, axis=-1)
             return x, label
@@ -351,7 +348,7 @@ class AudioProcessor(object):
         data = data.map(load, num_parallel_calls=tf.data.experimental.AUTOTUNE).cache()
         data = data.map(preprocess, num_parallel_calls=tf.data.experimental.AUTOTUNE)
         return data
-    
+
     def load_sample(self, file, foreground_volume=1.0, sample_rate=None):
         settings = self.model_settings
         if sample_rate is None:
@@ -401,7 +398,7 @@ class SpeechDataset:
         self.prepared_words_list = prepare_words_list(wanted_words)
         self.model_settings = \
             self._prepare_model_settings(len(self.prepared_words_list), sample_rate, clip_duration_ms,
-                                         window_size_ms, window_stride, feature_bin_count, 
+                                         window_size_ms, window_stride, feature_bin_count,
                                          upper_band_limit, lower_band_limit)
 
         self.audio_processor = AudioProcessor(data_url, data_dir, silence_percentage, unknown_percentage, wanted_words,

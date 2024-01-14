@@ -1,5 +1,5 @@
 # Compressed Model Inference
-This repository contains small experiments of how different optimization and compression techniques affect a models latency. 
+This repository contains small experiments on how different optimization and compression techniques affect a model's latency. 
 
 ### Included Experiments: 
 1. Compilation using XLA 

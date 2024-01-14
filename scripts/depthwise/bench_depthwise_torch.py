@@ -39,12 +39,9 @@ def benchmark(input):
 
 
 def main():
-
     t.backends.cudnn.benchmark = True
 
     benchmark(t.randn(2, 32, 512, 512).cuda())
-    # benchmark(t.randn(2,32,512,512).cuda())
-    # benchmark(t.randn(2,32,512,512).cuda())
 
 
 if __name__ == "__main__":

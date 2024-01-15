@@ -13,11 +13,9 @@ This repository contains small experiments on how different optimization and com
 - NVIDIA A100-SXM-80GB GPU with an AMD EPYC 7763 64-Core 1.8GHz CPU
 
 ### Software
-#### Mac
-- TensorFlow 2.12.0
-- Python 3.8.15
-#### A100
-- NVIDIA’s TensorFlow NGC Container (tag: 23.12-tf2-py3)
+- Mac: TensorFlow 2.12.0
+- Mac: Python 3.8.15
+- A100: NVIDIA’s TensorFlow NGC Container (tag: 23.12-tf2-py3)
 
 ## Results
 ### Compilation & Distillation
@@ -35,10 +33,10 @@ This repository contains small experiments on how different optimization and com
 #### LeNet-5
 |          | Model Size [MiB] | Accuracy | Compression Factor | Accuracy Change |
 |----------|--------:|---------:|---------:|---------:|
-| Baseline | 0.16   |    98.78%  | 1.0x | ± 0.00% |
-| Pruned | 0.05  |    98.89%  | 3.2x | + 0.11% |
-| Quantized | 0.04   |    98.86%  | 4.0x | + 0.08% |
-| Quantized & Pruned | 0.02   |    98.78%  | 8.0x | ± 0.00% |
+| Baseline           | 0.16 | 98.78% | 1.0x | ± 0.00% |
+| Pruned             | 0.05 | 98.89% | 3.2x | + 0.11% |
+| Quantized          | 0.04 | 98.86% | 4.0x | + 0.08% |
+| Quantized & Pruned | 0.02 | 98.78% | 8.0x | ± 0.00% |
 
 #### ResNet-50
 |          | Throughput  [images/second] | Latency [ms] | dtype | Model Size [MiB] | Speedup |
